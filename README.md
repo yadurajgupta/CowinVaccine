@@ -1,13 +1,10 @@
 # CowinVaccine
 
 Scripts to help booking vacine slot from cowin site
-#
 ## [Covid.py](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)
 Install everything from requirements.py 
 (<path-to-python> or python ot python3) -m pip install -r ./requirements.txt
 Run on a loop and beeps whenever it finds a slot in you any districts that you can mention at the top
-#
-
 ## [Automation Selection](https://github.com/yadurajgupta/CowinVaccine/blob/main/automating_select.js)
 - Code has to be pasted into the console at the cowin search page    
 - Select either your district or pincode 
