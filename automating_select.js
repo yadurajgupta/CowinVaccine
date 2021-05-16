@@ -18,13 +18,13 @@ let intervalVal = setInterval(() => {
         if (document.location.href != URL) throw ["Not at the right page", `Get to ${URL}`].join("\n");
         $("ion-button.pin-search-btn")[0].click();
         let filters = $("div.agefilterblock div input");
-
         filters[0].click();   //18+
         // filters[1].click();   //45+
         filters[2].click();   //Covishield
         filters[3].click();   //Covaxin
-        // filters[4].click();   //Paid
-        // filters[5].click();   //Free
+        filters[4].click();   //Sputnik V
+        // filters[5].click();   //Paid
+        // filters[6].click();   //Free
 
         let result = $("ul.slot-available-wrap li a").toArray()
             .filter((element) => {

@@ -12,17 +12,18 @@ from beepy import beep
 # GET list of districts in state    https://cdn-api.co-vin.in/api/v2/admin/location/districts/state_id
 # Look at the districts.csv and states.csv (generted by get_all_centers.py)
 districts_names = [
+    "Meerut",
     "Gurgaon",
 ]
 
 vaccine = [
-    # "COVAXIN",
-    "COVISHIELD",
+    "COVAXIN",
+    # "COVISHIELD",
 ]
 
 min_age_limit = [
-    # 18,
-    45,
+    18,
+    # 45,
 ]
 date_to_look_from = 1  # (0 means today slot also works) (1 would mean look for slots from tommorow)
 min_available_seats = 0
@@ -44,12 +45,18 @@ def get_district_info(names):
     curr_districts = []
     for name in names:
         name = name.lower()
-        if len(districts_df[districts_df["district_name"] == name]) == 1:
-            row = districts_df[districts_df["district_name"] == name]
-            index = row.index[0]
-            curr_districts.append(
-                districts_df[districts_df["district_name"].str.lower() == name.lower()].to_dict(orient="index")[index]
-            )
+        results = districts_df[districts_df["district_name"] == name]
+        if len(results) > 0:
+            for i in range(len(results)):
+                curr_district = results.iloc[i]
+                curr_districts.append(
+                    {
+                        "state_name": curr_district["state_name"],
+                        "state_id": curr_district["state_id"],
+                        "district_name": curr_district["district_name"],
+                        "district_id": curr_district["district_id"],
+                    }
+                )
         else:
             print("SOMETHING WRONG IN DISTRICT NAMES")
             print(f"{name} matching {len(districts_df[districts_df['district_name'] == name])} rows")
@@ -119,13 +126,15 @@ def get_centers(districts_info):
                     ("date", get_date(date_to_look_from)),
                 ),
             )
+            if response.status_code != 200:
+                raise Exception(
+                    f"Request for {district['district_name'].upper()} returned status {requests.status_codes._codes[response.status_code][0].upper()}"
+                )
             response = json.loads(response.content.decode("utf8"))
             centers.extend(response["centers"])
-        except Exception as _:
-            print(response)
-            print(district)
+        except Exception as E:
+            print(E)
             beep(2)
-            traceback.print_exc()
     return centers
 
 
@@ -135,35 +144,32 @@ def get_fresh_response(num=1):
     if DISTRICT_INFO is None:
         DISTRICT_INFO = get_district_info(districts_names)
     centers = get_centers(DISTRICT_INFO)
-    if len(centers) == 0 and len(districts_names) > 1:
-        raise Exception("SOMETHING WRONG WITH REQUEST")
+    print(f"FOUND { len(centers) } POSSIBLE CENTERS")
+    lst = []
+    for center in centers:
+        parsed_content = parse_center_info(center)
+        if len(parsed_content):
+            lst.extend(parsed_content)
+    if len(lst) == 0:
+        print("NOTHING FREE")
     else:
-        print(f"FOUND { len(centers) } POSSIBLE CENTERS")
-        lst = []
-        for center in centers:
-            parsed_content = parse_center_info(center)
-            if len(parsed_content):
-                lst.extend(parsed_content)
-        if len(lst) == 0:
-            print("NOTHING FREE")
-        else:
-            available_centers = {}
-            for center in lst:
-                if center["district_name"] not in available_centers:
-                    available_centers[center["district_name"]] = []
-                available_centers[center["district_name"]].append(center)
-            with open("result.txt", "w") as file:
-                file.writelines([f"Found {len(lst)} ON {get_date()} AT {get_time()}\n"])
-                for district in available_centers:
-                    file.writelines([district, "\n"])
+        available_centers = {}
+        for center in lst:
+            if center["district_name"] not in available_centers:
+                available_centers[center["district_name"]] = []
+            available_centers[center["district_name"]].append(center)
+        with open("result.txt", "w") as file:
+            file.writelines([f"Found {len(lst)} ON {get_date()} AT {get_time()}\n"])
+            for district in available_centers:
+                file.writelines([district, "\n"])
+                file.flush()
+                for center in available_centers[district]:
+                    file.writelines([json.dumps(center, indent=1), "\n"])
                     file.flush()
-                    for center in available_centers[district]:
-                        file.writelines([json.dumps(center, indent=1), "\n"])
-                        file.flush()
-                        print(district, json.dumps(center, indent=1))
-                        if center["available_capacity"] >= 10:
-                            beep(1)
-            sleep(5)
+                    print(district, json.dumps(center, indent=1))
+                    if center["available_capacity"] >= 10:
+                        beep(1)
+        sleep(5)
 
 
 num = 1
