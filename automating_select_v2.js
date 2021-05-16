@@ -1,6 +1,8 @@
-let script = document.createElement("script");
-script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
-_ = document.getElementsByTagName("head")[0].appendChild(script);
+(() => {
+    let script = document.createElement("script");
+    script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
+    _ = document.getElementsByTagName("head")[0].appendChild(script);
+})();
 // Audio by Eric Matyas
 // www.soundimage.org
 let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3");
@@ -12,53 +14,67 @@ function playAudio(audio, milis) {
     audio.play();
     setInterval((audio) => { audio.loop = false }, milis);
 }
+var months = {}
+for (let index = 0; index < 12; index++) {
+    months[new Date(0, index).toLocaleString('en-US', { month: 'long' })] = index + 1
+}
 function get_clicked_filters() {
     return $("div.agefilterblock div input").toArray()
-        .map((element, index) => {
-            return [element, index]
-        }).filter((element) => {
-            return element[0].checked
-        }).map((element) => {
-            return element[1]
-        })
+        .map((element, index) => { return [element, index] })
+        .filter((element) => { return element[0].checked })
+        .map((element) => { return element[1] })
 }
 function get_dates() {
     return $("li.availability-date").toArray()
-        .filter((_, index) => { return index < 7 }).map((element) => {
-            return $(element).text().split(" ")
+        .filter((element) => { return $(element).is(":visible") })
+        .map((element) => {
+            let arr = $(element).text().split(" ")
+            return new Date(arr[2], months[arr[1]], arr[0]);
         })
 }
-function get_centers() {
-    let centers = $("div[_ngcontent-wcq-c114].ng-star-inserted").toArray()
+function parse_slots(slots, dates) {
+    return slots.toArray()
+        .map((element, index) => {
+            return {
+                'HTMLElement': element,
+                'availability': element.innerText,
+                'date': dates[index],
+            }
+        })
         .filter((element) => {
-            return element.classList.length == 1 && $(element).find("mat-list-option").length > 0;
-        }).map((element) => {
-            let center_name = $($(element).find("h5.center-name-title").toArray()).text()
-            return [center_name, $(element).find("ul.slot-available-wrap li a").toArray()];
+            return !isNaN(element['availability']) && parseInt(element['availability']) >= minimum_available_slots
+        })
+        .map((element) => {
+            element['availability'] = parseInt(element['availability'])
+            return element
         })
 }
+function get_centers(dates) {
+    return $("ion-row").toArray().filter((element) => {
+        return $(element).find("ul.slot-available-wrap li a").length > 0 && $(element).find("ion-row").length == 0
+    }).map((element) => {
+        let center_name = $($(element).find("h5.center-name-title").toArray()).text()
+        return { 'center_name': center_name, 'slots': parse_slots($(element).find("ul.slot-available-wrap li a"), dates) };
+    })
+}
+let dates = get_dates()
 let clicked_filters_indexes = get_clicked_filters()
 let intervalVal = setInterval(() => {
     try {
         if (document.location.href != URL) throw ["Not at the right page", `Get to ${URL}`].join("\n");
         $("ion-button.pin-search-btn")[0].click();
         let filters = $("div.agefilterblock div input").toArray()
-        clicked_filters_indexes.forEach(element => {
-            filters[element].click()
-        });
+        clicked_filters_indexes.forEach(element => { filters[element].click() });
         setTimeout(() => {
-            let result = $("ul.slot-available-wrap li a").toArray()
-                .filter((element) => {
-                    return !isNaN(element.innerText)
-                        && parseInt(element.innerText) >= minimum_available_slots
-                })
-                .reduce((lastRetVal, currElement) => {
-                    currNum = parseInt(currElement.innerText);
-                    if (currNum > lastRetVal[0]) return [currNum, currElement];
-                    else return lastRetVal;
-                }, [0, null])[1];
-            if (result) {
-                result.click();
+            let result = get_centers(dates)
+                .reduce((accumulator, element) => { return accumulator.concat(element['slots']) }, [])
+                .reduce((accumulator, element) => {
+                    if (element['availability'] > accumulator['availability']) return element
+                    return accumulator;
+                }, { 'availability': 0 });
+
+            if (result['availability'] > 0) {
+                result['HTMLElement'].click();
                 playAudio(successAudio, 10000);
                 clearInterval(intervalVal);
             }
@@ -69,4 +85,4 @@ let intervalVal = setInterval(() => {
         clearInterval(intervalVal);
     }
 }, 1000);
-// clearInterval(intervalVal)
+clearInterval(intervalVal)
