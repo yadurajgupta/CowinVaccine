@@ -32,7 +32,8 @@ function get_dates() {
             return new Date(arr[2], months[arr[1]], arr[0]);
         })
 }
-function parse_slots(slots, dates) {
+function parse_slots(slots) {
+    let dates = get_dates()
     return slots.toArray()
         .map((element, index) => {
             return {
@@ -49,15 +50,14 @@ function parse_slots(slots, dates) {
             return element
         })
 }
-function get_centers(dates) {
+function get_centers() {
     return $("ion-row").toArray().filter((element) => {
         return $(element).find("ul.slot-available-wrap li a").length > 0 && $(element).find("ion-row").length == 0
     }).map((element) => {
         let center_name = $($(element).find("h5.center-name-title").toArray()).text()
-        return { 'center_name': center_name, 'slots': parse_slots($(element).find("ul.slot-available-wrap li a"), dates) };
+        return { 'center_name': center_name, 'slots': parse_slots($(element).find("ul.slot-available-wrap li a")) };
     })
 }
-let dates = get_dates()
 let clicked_filters_indexes = get_clicked_filters()
 let intervalVal = setInterval(() => {
     try {
@@ -66,8 +66,10 @@ let intervalVal = setInterval(() => {
         let filters = $("div.agefilterblock div input").toArray()
         clicked_filters_indexes.forEach(element => { filters[element].click() });
         setTimeout(() => {
-            let result = get_centers(dates)
+            let result = get_centers()
                 .reduce((accumulator, element) => { return accumulator.concat(element['slots']) }, [])
+                .sort((a, b) => { a['availability'] - b['availability'] })
+                .sort((a, b) => a['date'] - b['date'])
                 .reduce((accumulator, element) => {
                     if (element['availability'] > accumulator['availability']) return element
                     return accumulator;
@@ -85,4 +87,4 @@ let intervalVal = setInterval(() => {
         clearInterval(intervalVal);
     }
 }, 1000);
-clearInterval(intervalVal)
+// clearInterval(intervalVal)
