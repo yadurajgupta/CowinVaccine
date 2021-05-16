@@ -38,24 +38,24 @@ function parse_slots(slots) {
         .map((element, index) => {
             return {
                 'HTMLElement': element,
-                'availability': element.innerText,
+                'availability': parseInt(element.innerText),
                 'date': dates[index],
             }
         })
         .filter((element) => {
-            return !isNaN(element['availability']) && parseInt(element['availability']) >= minimum_available_slots
-        })
-        .map((element) => {
-            element['availability'] = parseInt(element['availability'])
-            return element
+            return !isNaN(element['availability'])
+                && element['availability'] >= minimum_available_slots
         })
 }
 function get_centers() {
     return $("ion-row").toArray().filter((element) => {
-        return $(element).find("ul.slot-available-wrap li a").length > 0 && $(element).find("ion-row").length == 0
+        return $(element).find("ul.slot-available-wrap li a").length > 0
+            && $(element).find("ion-row").length == 0
     }).map((element) => {
-        let center_name = $($(element).find("h5.center-name-title").toArray()).text()
-        return { 'center_name': center_name, 'slots': parse_slots($(element).find("ul.slot-available-wrap li a")) };
+        return {
+            'center_name': $(element).find("h5.center-name-title").innerText,
+            'slots': parse_slots($(element).find("ul.slot-available-wrap li a")),
+        };
     })
 }
 let clicked_filters_indexes = get_clicked_filters()
@@ -64,7 +64,7 @@ let intervalVal = setInterval(() => {
         if (document.location.href != URL) throw ["Not at the right page", `Get to ${URL}`].join("\n");
         $("ion-button.pin-search-btn")[0].click();
         let filters = $("div.agefilterblock div input").toArray()
-        clicked_filters_indexes.forEach(element => { filters[element].click() });
+        clicked_filters_indexes.forEach(element => filters[element].click());
         setTimeout(() => {
             let result = get_centers()
                 .reduce((accumulator, element) => { return accumulator.concat(element['slots']) }, [])
