@@ -1,8 +1,9 @@
-(() => {
+function add_jquery() {
     let script = document.createElement("script");
     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
-    _ = document.getElementsByTagName("head")[0].appendChild(script);
-})();
+    document.getElementsByTagName("head")[0].appendChild(script);
+};
+add_jquery()
 // Audio by Eric Matyas
 // www.soundimage.org
 let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3");
@@ -87,4 +88,3 @@ let intervalVal = setInterval(() => {
         clearInterval(intervalVal);
     }
 }, 1000);
-// clearInterval(intervalVal)
