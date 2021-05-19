@@ -13,7 +13,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 - Edit the User Edit part at the top of the script if required
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 
-### What the code does?
+### What does the script do?
 
 1. Keeps clicking the search button
 2. Keeps clicking the filters you had selected
