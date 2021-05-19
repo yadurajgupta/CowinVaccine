@@ -17,8 +17,8 @@ let CENTERS_NAMES = []
 
 // start and end dates for the slots
 // Leave as is if you want to book slot for any day
-slot_start_date = "DD/MM/YYYY";
-slot_end_date = "DD/MM/YYYY";
+let slot_start_date = "DD/MM/YYYY";
+let slot_end_date = "DD/MM/YYYY";
 
 
 (() => {
