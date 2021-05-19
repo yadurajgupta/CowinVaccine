@@ -19,9 +19,10 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 2. Keeps clicking the filters you had selected
 3. Looks at the page and sees if any slot is available
 4. Clicks on the slot with max availibility and plays audio beeps to alert
-5. **IMPORTANT:** You will still need to enter the security code
-6. If you are automatically logged out then also creates a beep to alert
-7. if Anything at any point seems to be broken you can just refresh the page to start over
+5. Selects the slot timing you have mentionted in User Defined part
+6. **IMPORTANT:** You will still need to enter the security code
+7. If you are automatically logged out then also creates a beep to alert
+8. if Anything at any point seems to be broken you can just refresh the page to start over
 
 ### **Extra tips**
 
