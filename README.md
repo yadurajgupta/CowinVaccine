@@ -29,8 +29,8 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
    - Use telegram alerts to see when have the past slots have come out [Under45](https://under45.in/) or [Above45](https://above45.in/)
    - The slots follow similar patern every day
 2. **Copy OTP faster**
-   - Use [Google Messages](https://play.google.com/store/apps/details?id=com.google.android.apps.messaging&hl=en_IN&gl=US)
-   - Using Google Messages as the default messaging app on your phone will allow you to access texts on Laptop/PC as well
+   - Use [Google Messages](https://play.google.com/store/apps/details?id=com.google.android.apps.messaging&hl=en_IN&gl=US) as default mesage app on your phone
+   - Allows you to access texts on laptop/PC
 
 ## [Covid.py](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)(OUTDATED DUE TO CHANGES TO API)
 
