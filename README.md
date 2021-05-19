@@ -14,11 +14,11 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 - All the code does is
   1. Keeps clicking the search button
-  2. Keeps clicking the filters you had selected
-  3. Looks at the page and sees if any slot is available
-  4. Clicks on the slot with max availibility and plays audio beeps to alert
-  5. **You will still need to enter the security code and slot timing**
-  6. If you are automatically logged out then also creates a beep to alert
+  1. Keeps clicking the filters you had selected
+  1. Looks at the page and sees if any slot is available
+  1. Clicks on the slot with max availibility and plays audio beeps to alert
+  1. **You will still need to enter the security code and slot timing**
+  1. If you are automatically logged out then also creates a beep to alert
 
 ## [Covid.py](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)(OUTDATED DUE TO CHANGES TO API)
 
