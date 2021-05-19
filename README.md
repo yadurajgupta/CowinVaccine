@@ -4,10 +4,12 @@ Scripts to help booking vacine slot from cowin site
 
 ## [Automating Selection](https://github.com/yadurajgupta/CowinVaccine/blob/main/automating_select_v2.js)
 
-- Code has to be pasted into the console at the cowin search page
-- Select either your district or pincode
+- Login into [Cowin Site](https://selfregistration.cowin.gov.in/)
+- Create or select user
+- You can select either your district or pincode 
 - Select valid filters on the page
 - Press ctrl + shift + J to open console
+- Copy and paste code from [Automating Selection](https://github.com/yadurajgupta/CowinVaccine/blob/main/automating_select_v2.js)
 - Edit the User Edit part at the top of the script if required
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 - All the code does is
