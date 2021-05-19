@@ -1,5 +1,6 @@
 //START OF USER FILLED PART
 
+
 // minimum number of slots available
 let minimum_available_slots = 1
 
