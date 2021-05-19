@@ -7,6 +7,8 @@ Scripts to help booking vacine slot from cowin site
 - Code has to be pasted into the console at the cowin search page
 - Select either your district or pincode
 - Select valid filters on the page
+- Press ctrl + shift + J to open console
+- Edit the User Edit part if required
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 - All the code does is
   1. Keeps clicking the search button
