@@ -11,7 +11,6 @@ let minimum_available_slots = 1
 // 2. WAZIRABAD Center
 // 3. XYZ PHC
 // 4. Center UPHC sector 124 (because "UPCH" has PHC in it)
-
 // or leave empty if any center works
 let CENTERS_NAMES = []
 
@@ -19,6 +18,13 @@ let CENTERS_NAMES = []
 // Leave as is if you want to book slot for any day
 let slot_start_date = "DD/MM/YYYY";
 let slot_end_date = "DD/MM/YYYY";
+
+// slot_timinng can be set to (1,2,3,4)
+// 1 = 09:00AM - 11:00AM
+// 2 = 11:00AM - 01:00PM
+// 3 = 01:00PM - 03:00PM
+// 4 = 03:00PM - 05:00PM
+let slot_timing = 1;
 
 //END OF USER FILLED PART
 
@@ -32,6 +38,8 @@ let slot_end_date = "DD/MM/YYYY";
     let error_audio_playback_time = 10000;
     let success_audio_playback_time = 10000;
     let search_button_timeout = 300;
+    let slot_select_timeout = 300;
+    let select_slot_timing = slot_timing;
     setTimeout(() => {
 
         // Audio by Eric Matyas
@@ -51,6 +59,7 @@ let slot_end_date = "DD/MM/YYYY";
         let search_button_selector = "ion-button.pin-search-btn"
         let center_row_selector = "ion-row"
         let slot_date_selector = "li.availability-date"
+        let slot_time_button_selector = "ion-button"
 
         function parse_date(date_string) {
             if (date_string == "DD/MM/YYYY") return null;
@@ -131,7 +140,9 @@ let slot_end_date = "DD/MM/YYYY";
             if (element['availability'] > accumulator['availability']) return element
             return accumulator;
         }
-
+        function select_slot(timing) {
+            setTimeout(() => { $(slot_time_button_selector).toArray()[timing - 1].click() }, slot_select_timeout);
+        }
         let clicked_filters_indexes = get_clicked_filters()
         let start_date_parsed = parse_date(slot_start_date)
         let end_date_parsed = parse_date(slot_end_date)
@@ -151,6 +162,7 @@ let slot_end_date = "DD/MM/YYYY";
                     if (result['availability'] > 0) {
                         result['HTMLElement'].click();
                         playAudio(successAudio, success_audio_playback_time);
+                        select_slot(select_slot_timing);
                         clearInterval(intervalVal);
                     }
                 }, search_button_timeout);
