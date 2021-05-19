@@ -17,8 +17,8 @@ let CENTERS_NAMES = []
 
 // start and end dates for the slots
 // Leave as is if you want to book slot for any day
-start_date = "DD/MM/YYYY";
-end_date = "DD/MM/YYYY";
+slot_start_date = "DD/MM/YYYY";
+slot_end_date = "DD/MM/YYYY";
 
 
 (() => {
@@ -26,6 +26,11 @@ end_date = "DD/MM/YYYY";
     let script = document.createElement("script");
     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
     document.getElementsByTagName("head")[0].appendChild(script);
+    let initial_jquery_load_timeout = 100;
+    let script_search_repeat_time = 1000;
+    let error_audio_playback_time = 10000;
+    let success_audio_playback_time = 10000;
+    let search_button_timeout = 300;
     setTimeout(() => {
 
         // Audio by Eric Matyas
@@ -127,8 +132,8 @@ end_date = "DD/MM/YYYY";
         }
 
         let clicked_filters_indexes = get_clicked_filters()
-        let start_date_parsed = parse_date(start_date)
-        let end_date_parsed = parse_date(end_date)
+        let start_date_parsed = parse_date(slot_start_date)
+        let end_date_parsed = parse_date(slot_end_date)
 
         intervalVal = setInterval(() => {
             try {
@@ -144,15 +149,15 @@ end_date = "DD/MM/YYYY";
                         .reduce(get_slot_with_max_avail, { 'availability': 0 });
                     if (result['availability'] > 0) {
                         result['HTMLElement'].click();
-                        playAudio(successAudio, 10000);
+                        playAudio(successAudio, success_audio_playback_time);
                         clearInterval(intervalVal);
                     }
-                }, 100);
+                }, search_button_timeout);
             } catch (error) {
                 console.error(error);
-                playAudio(errorAudio, 10000);
+                playAudio(errorAudio, error_audio_playback_time);
                 clearInterval(intervalVal);
             }
-        }, 1000);
-    }, 100);
+        }, script_search_repeat_time);
+    }, initial_jquery_load_timeout);
 })();
