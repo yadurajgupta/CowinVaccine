@@ -1,5 +1,5 @@
-//TO BE FILLED BY USER 
-// minimum number of slots available 
+//START OF USER FILLED PART
+// minimum number of slots available
 let minimum_available_slots = 1
 
 // Fill in center names as an array (Lower/Upper Case does not matter)
@@ -20,6 +20,7 @@ let CENTERS_NAMES = []
 let slot_start_date = "DD/MM/YYYY";
 let slot_end_date = "DD/MM/YYYY";
 
+//END OF USER FILLED PART
 
 (() => {
     let intervalVal = null;
