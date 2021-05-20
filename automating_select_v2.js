@@ -114,7 +114,6 @@ let slot_timing = 1;
                 })
         }
         function check_date_limits(slot) {
-            if (start_date_parsed == null && end_date_parsed == null) return true;
             if (start_date_parsed && start_date_parsed > slot['date']) return false;
             if (end_date_parsed && end_date_parsed < slot['date']) return false;
             return true;
