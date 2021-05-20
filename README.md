@@ -34,7 +34,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
    - Use [Google Messages](https://play.google.com/store/apps/details?id=com.google.android.apps.messaging&hl=en_IN&gl=US) as default mesage app on your phone
    - Allows you to access texts on laptop/PC
 
-## [Pyhon Notification](https://github.com/yadurajgupta/CowinVaccine/tree/main/python_notification)(OUTDATED DUE TO CHANGES TO API)
+## [Pyhon Notification](https://github.com/yadurajgupta/CowinVaccine/tree/main/python_notification) (OUTDATED DUE TO CHANGES TO API)
 
 - Install everything from requirements.py
 - (path-to-python or python or python3) -m pip install -r ./requirements.txt
