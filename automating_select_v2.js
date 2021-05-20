@@ -30,6 +30,8 @@ let slot_timing = 1;
 //END OF USER FILLED PART
 
 (() => {
+    let SCRIPT_URL = "https://selfregistration.cowin.gov.in/appointment"
+
     if (![1, 2, 3, 4].includes(slot_timing)) {
         console.error(`Something wrong with slot_timing ${slot_timing}\nHas to be one of (1, 2, 3, 4)`)
         return;
@@ -37,6 +39,10 @@ let slot_timing = 1;
 
     if (isNaN(minimum_available_slots)) {
         console.error("Something wrong with minimum_available_slots ${minimum_available_slots}\nHas to be a integer")
+        return;
+    }
+    if (document.location.href != SCRIPT_URL) {
+        console.error(`Not at the right page\nGet to ${SCRIPT_URL}`);
         return;
     }
     minimum_available_slots = parseInt(minimum_available_slots)
@@ -58,7 +64,6 @@ let slot_timing = 1;
         let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3");
         let errorAudio = new Audio("https://soundimage.org/wp-content/uploads/2020/01/UI_Quirky_42.mp3");
         //URL on which script is meant to work on
-        let SCRIPT_URL = "https://selfregistration.cowin.gov.in/appointment"
 
 
         // Jquery selectors for elements
