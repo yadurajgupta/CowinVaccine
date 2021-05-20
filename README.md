@@ -18,11 +18,11 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 1. Keeps clicking the search button
 2. Keeps clicking the filters you had selected
 3. Looks at the page and sees if any slot is available
-4. Clicks on the slot with max availibility and plays audio beeps to alert
-5. Selects the slot timing you have mentionted in User Defined part
+4. Clicks on the slot with max availibility and plays audio to alert
+5. Selects the slot timing you have mentionted in User Arguments part
 6. Moves cursor to security code textbox
 7. **IMPORTANT:** You will still need to enter the security code
-8. If you are automatically logged out then also creates a beep to alert
+8. If you are automatically logged out then also plays audio to alert
 9. if Anything at any point seems to be broken you can just refresh the page to start over
 
 ### **Extra tips**
@@ -34,7 +34,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
    - Use [Google Messages](https://play.google.com/store/apps/details?id=com.google.android.apps.messaging&hl=en_IN&gl=US) as default mesage app on your phone
    - Allows you to access texts on laptop/PC
 
-## [Covid.py](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)(OUTDATED DUE TO CHANGES TO API)
+## [Pyhon Notification](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)(OUTDATED DUE TO CHANGES TO API)
 
 - Install everything from requirements.py
 - (path-to-python or python or python3) -m pip install -r ./requirements.txt
