@@ -9,7 +9,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 - You can select either your district or pincode to search
 - Select valid filters on the page (18+,45+,Covishield,Covaxin,Sputnik V,Paid,Free)
 - Press ctrl + shift + J to open console
-- Copy and paste code from [automating_select_v2.js](https://raw.githubusercontent.com/yadurajgupta/CowinVaccine/main/automating_select_v2.js)
+- Copy and paste code from [automating_select_v2.js](https://raw.githubusercontent.com/yadurajgupta/CowinVaccine/main/automiting_selection/automating_select_v2.js)
 - Edit the User Edit part at the top of the script if required
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 
@@ -34,7 +34,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
    - Use [Google Messages](https://play.google.com/store/apps/details?id=com.google.android.apps.messaging&hl=en_IN&gl=US) as default mesage app on your phone
    - Allows you to access texts on laptop/PC
 
-## [Pyhon Notification](https://github.com/yadurajgupta/CowinVaccine/blob/main/covid.py)(OUTDATED DUE TO CHANGES TO API)
+## [Pyhon Notification](https://github.com/yadurajgupta/CowinVaccine/tree/main/python_notification)(OUTDATED DUE TO CHANGES TO API)
 
 - Install everything from requirements.py
 - (path-to-python or python or python3) -m pip install -r ./requirements.txt
