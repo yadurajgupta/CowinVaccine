@@ -10,7 +10,7 @@ Scripts to help booking vacine slot from [Cowin Site](https://www.cowin.gov.in/h
 - Select valid filters on the page (18+,45+,Covishield,Covaxin,Sputnik V,Paid,Free)
 - Press ctrl + shift + J to open console
 - Copy and paste code from [automating_select_v2.js](https://raw.githubusercontent.com/yadurajgupta/CowinVaccine/main/automating_selection/automating_select_v2.js)
-- Edit the User Edit part at the top of the script if required
+- Edit the User Arguments part at the top of the script if required
 - [Youtube Demo](https://youtu.be/epKo8R-mI3k)
 
 ### What does the script do?
