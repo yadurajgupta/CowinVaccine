@@ -61,7 +61,7 @@ let slot_timing = 1;
         let center_row_selector = "ion-row"
         let slot_date_selector = "li.availability-date"
         let slot_time_button_selector = "ion-button"
-
+        let security_code_textbox_selector = "input[type=text]"
         function parse_date(date_string) {
             if (date_string == "DD/MM/YYYY") return null;
             let parsed = date_string.split("/").map((value) => { return parseInt(value) })
@@ -121,7 +121,7 @@ let slot_timing = 1;
                 })
                 .map((element) => {
                     return {
-                        'center_name': $($(element).find(jquery_center_name_selector)).text().toLowerCase(),
+                        'center_name': $(element).find(jquery_center_name_selector).first().text().toLowerCase(),
                         'slots': parse_slots($(element).find(jquery_slot_selector)),
                     };
                 })
@@ -142,7 +142,11 @@ let slot_timing = 1;
             return accumulator;
         }
         function select_slot(timing) {
-            setTimeout(() => { $(slot_time_button_selector).toArray()[timing - 1].click() }, slot_select_timeout);
+            setTimeout(() => {
+                $(slot_time_button_selector).toArray()[timing - 1].click()
+                $(security_code_textbox_selector).first().focus()
+            }, slot_select_timeout);
+
         }
         let clicked_filters_indexes = get_clicked_filters()
         let start_date_parsed = parse_date(slot_start_date)
@@ -163,8 +167,8 @@ let slot_timing = 1;
                     if (result['availability'] > 0) {
                         result['HTMLElement'].click();
                         playAudio(successAudio, success_audio_playback_time);
-                        select_slot(select_slot_timing);
                         clearInterval(intervalVal);
+                        select_slot(select_slot_timing);
                     }
                 }, search_button_timeout);
             } catch (error) {
