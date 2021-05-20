@@ -74,8 +74,10 @@ let slot_timing = 1;
         function parse_date(date_string) {
             if (date_string == "DD/MM/YYYY") return null;
             let parsed = date_string.split("/").map((value) => { return parseInt(value) })
-            if (parsed.length != 3 || parsed.some(isNaN))
+            if (parsed.length != 3 || parsed.some(isNaN)) {
                 console.error(`Something wrong with date ${date_string}\nIt will not be used`)
+                return null;
+            }
             return new Date(parsed[2], parsed[1] - 1, parsed[0])
         }
         function playAudio(audio, milis) {
