@@ -79,9 +79,9 @@ let slot_timing = 1;
         }
         function get_clicked_filters() {
             return $(jquery_filters_selector).toArray()
-                .map((element, index) => { return [element, index] })
-                .filter((element) => { return element[0].checked })
-                .map((element) => { return element[1] })
+                .map((element, index) => { return { 'html_element': element, 'index': index } })
+                .filter((element) => { return element['html_element'].checked })
+                .map((element) => { return element['index'] })
         }
         function get_dates() {
             return $(slot_date_selector).toArray()
@@ -156,7 +156,7 @@ let slot_timing = 1;
             try {
                 if ($(success_appointment_header_selector).length > 0) return "DONE";
                 if (document.location.href != SCRIPT_URL) throw ["Not at the right page", `Get to ${SCRIPT_URL}`].join("\n");
-                $(search_button_selector)[0].click();
+                $(search_button_selector).first().click();
                 let filters = $(jquery_filters_selector).toArray()
                 clicked_filters_indexes.forEach(element => filters[element].click());
                 setTimeout(() => {
