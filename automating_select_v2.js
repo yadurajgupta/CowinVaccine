@@ -30,6 +30,17 @@ let slot_timing = 1;
 //END OF USER FILLED PART
 
 (() => {
+    if (![1, 2, 3, 4].includes(slot_timing)) {
+        console.error(`Something wrong with slot_timing ${slot_timing}\nHas to be one of (1, 2, 3, 4)`)
+        return;
+    }
+
+    if (isNaN(minimum_available_slots)) {
+        console.error("Something wrong with minimum_available_slots ${minimum_available_slots}\nHas to be a integer")
+        return;
+    }
+    minimum_available_slots = parseInt(minimum_available_slots)
+
     let intervalVal = null;
     let script = document.createElement("script");
     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
@@ -40,9 +51,8 @@ let slot_timing = 1;
     let success_audio_playback_time = 10000;
     let search_button_timeout = 300;
     let slot_select_timeout = 300;
-    let select_slot_timing = slot_timing;
+    let select_slot_timing_index = slot_timing - 1;
     setTimeout(() => {
-
         // Audio by Eric Matyas
         // www.soundimage.org
         let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3");
@@ -50,7 +60,6 @@ let slot_timing = 1;
         //URL on which script is meant to work on
         let SCRIPT_URL = "https://selfregistration.cowin.gov.in/appointment"
 
-        let center_names_parsed = CENTERS_NAMES.map((name) => { return name.toLowerCase() })
 
         // Jquery selectors for elements
         let jquery_filters_selector = "div.agefilterblock div input"
@@ -65,6 +74,8 @@ let slot_timing = 1;
         function parse_date(date_string) {
             if (date_string == "DD/MM/YYYY") return null;
             let parsed = date_string.split("/").map((value) => { return parseInt(value) })
+            if (parsed.length != 3 || parsed.some(isNaN))
+                console.error(`Something wrong with date ${date_string}\nIt will not be used`)
             return new Date(parsed[2], parsed[1] - 1, parsed[0])
         }
         function playAudio(audio, milis) {
@@ -73,9 +84,12 @@ let slot_timing = 1;
             let closure_audio = audio
             setTimeout(() => { closure_audio.loop = false; }, milis);
         }
-        var months = {}
-        for (let index = 0; index < 12; index++) {
-            months[new Date(0, index).toLocaleString('en-US', { month: 'long' })] = index
+        function get_months() {
+            let months = {}
+            for (let index = 0; index < 12; index++) {
+                months[new Date(0, index).toLocaleString('en-US', { month: 'long' })] = index
+            }
+            return months;
         }
         function get_clicked_filters() {
             return $(jquery_filters_selector).toArray()
@@ -84,6 +98,7 @@ let slot_timing = 1;
                 .map((element) => { return element['index'] })
         }
         function get_dates() {
+            let months = get_months()
             return $(slot_date_selector).toArray()
                 .filter((element) => { return $(element).is(":visible") })
                 .map((element) => {
@@ -93,8 +108,8 @@ let slot_timing = 1;
         }
         function check_date_limits(slot) {
             if (start_date_parsed == null && end_date_parsed == null) return true;
-            if (start_date_parsed != null && start_date_parsed > slot['date']) return false;
-            if (end_date_parsed != null && end_date_parsed < slot['date']) return false;
+            if (start_date_parsed && start_date_parsed > slot['date']) return false;
+            if (end_date_parsed && end_date_parsed < slot['date']) return false;
             return true;
         }
         function parse_slots(slots) {
@@ -127,10 +142,10 @@ let slot_timing = 1;
                 })
                 .filter((element) => { return element['slots'].length > 0 })
         }
-        function filter_by_name(center_info) {
-            if (center_names_parsed.length == 0) return true;
+        function filter_by_name(center_info, center_names) {
+            if (center_names.length == 0) return true;
             let { center_name } = center_info
-            return center_names_parsed.some((name) => { return center_name.search(name) != -1; })
+            return center_names.some((name) => { return center_name.search(name) != -1; })
         }
         function concat_and_sort_slots(accumulator, element) {
             return accumulator.concat(element['slots'])
@@ -143,14 +158,14 @@ let slot_timing = 1;
         }
         function select_slot(timing) {
             setTimeout(() => {
-                $(slot_time_button_selector).toArray()[timing - 1].click()
+                $(slot_time_button_selector).eq(timing).click()
                 $(security_code_textbox_selector).first().focus()
             }, slot_select_timeout);
-
         }
         let clicked_filters_indexes = get_clicked_filters()
         let start_date_parsed = parse_date(slot_start_date)
         let end_date_parsed = parse_date(slot_end_date)
+        let center_names_parsed = CENTERS_NAMES.map((name) => { return name.toLowerCase() })
 
         intervalVal = setInterval(() => {
             try {
@@ -161,14 +176,14 @@ let slot_timing = 1;
                 clicked_filters_indexes.forEach(element => filters[element].click());
                 setTimeout(() => {
                     let result = get_centers()
-                        .filter(filter_by_name)
+                        .filter((center_info) => { return filter_by_name(center_info, center_names_parsed) })
                         .reduce(concat_and_sort_slots, [])
                         .reduce(get_slot_with_max_avail, { 'availability': 0 });
                     if (result['availability'] > 0) {
                         result['HTMLElement'].click();
                         playAudio(successAudio, success_audio_playback_time);
                         clearInterval(intervalVal);
-                        select_slot(select_slot_timing);
+                        select_slot(select_slot_timing_index);
                     }
                 }, search_button_timeout);
             } catch (error) {
