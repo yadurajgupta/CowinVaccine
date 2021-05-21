@@ -14,7 +14,7 @@ let minimum_available_slots = 1
 // 1. XYZ UPHC
 // 2. WAZIRABAD Center
 // 3. XYZ PHC
-// 4. Center UPHC sector 124 (because "UPCH" has PHC in it)
+// 4. Center UPHC sector 124 (because "UPHC" has PHC in it)
 // or leave empty if any center works
 let CENTERS_NAMES = []
 
