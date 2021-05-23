@@ -113,9 +113,9 @@ let slot_timing = 1;
                     return new Date(arr[2], months[arr[1]], arr[0]);
                 })
         }
-        function check_date_limits(slot, start_date, end_date) {
-            if (start_date && start_date > slot['date']) return false;
-            if (end_date && end_date < slot['date']) return false;
+        function check_date_limits(slot_date, start_date, end_date) {
+            if (start_date && start_date > slot_date) return false;
+            if (end_date && end_date < slot_date) return false;
             return true;
         }
         function parse_slots(slots, center_name) {
@@ -191,7 +191,7 @@ let slot_timing = 1;
                     let result = get_centers()
                         .filter((center_info) => { return filter_by_name(center_info['center_name'], center_names_parsed) })
                         .reduce(concat_slots, [])
-                        .filter((slot) => { return check_date_limits(slot, start_date_parsed, end_date_parsed) })
+                        .filter((slot) => { return check_date_limits(slot['date'], start_date_parsed, end_date_parsed) })
                         .sort(sort_slots)
                         // .map((slot) => {
                         //     console.log(slot);
