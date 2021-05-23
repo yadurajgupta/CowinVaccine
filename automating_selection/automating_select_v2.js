@@ -193,15 +193,15 @@ let slot_timing = 1;
                         .reduce(concat_slots, [])
                         .filter((slot) => { return check_date_limits(slot, start_date_parsed, end_date_parsed) })
                         .sort(sort_slots)
-                        .map((slot) => {
-                            console.log(slot);
-                            return slot;
-                        })
+                        // .map((slot) => {
+                        //     console.log(slot);
+                        //     return slot;
+                        // })
                         .reduce(get_slot_with_max_avail, { 'availability': 0 });
 
                     if (result['availability'] > 0) {
-                        // result['HTMLElement'].click();
-                        // playAudio(successAudio, success_audio_playback_time);
+                        result['HTMLElement'].click();
+                        playAudio(successAudio, success_audio_playback_time);
                         clearInterval(intervalVal);
                         select_slot(select_slot_timing_index);
                     }
