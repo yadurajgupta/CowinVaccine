@@ -93,7 +93,7 @@ let slot_timing = 1;
         }
         function get_months() {
             let months = {}
-            for (let index = 0 index < 12 index++) {
+            for (let index = 0; index < 12; index++) {
                 months[new Date(0, index).toLocaleString('en-US', { month: 'long' })] = index
             }
             return months
