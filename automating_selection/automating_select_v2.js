@@ -113,24 +113,25 @@ let slot_timing = 1;
                     return new Date(arr[2], months[arr[1]], arr[0]);
                 })
         }
-        function check_date_limits(slot) {
-            if (start_date_parsed && start_date_parsed > slot['date']) return false;
-            if (end_date_parsed && end_date_parsed < slot['date']) return false;
+        function check_date_limits(slot, start_date, end_date) {
+            if (start_date && start_date > slot['date']) return false;
+            if (end_date && end_date < slot['date']) return false;
             return true;
         }
-        function parse_slots(slots) {
+        function parse_slots(slots, center_name) {
             let dates = get_dates()
             return slots.toArray()
                 .map((element, index) => {
                     return {
                         'HTMLElement': element,
                         'availability': parseInt(element.innerText),
+                        'center_name': center_name,
                         'date': dates[index],
                     }
                 })
                 .filter((element) => {
                     return !isNaN(element['availability'])
-                        && element['availability'] >= minimum_available_slots && check_date_limits(element)
+                        && element['availability'] >= minimum_available_slots
                 })
         }
         function get_centers() {
@@ -141,22 +142,20 @@ let slot_timing = 1;
                         && $(element).find(center_row_selector).length == 0
                 })
                 .map((element) => {
+                    let center_name = $(element).find(jquery_center_name_selector).first().text().trim().toLowerCase()
                     return {
-                        'center_name': $(element).find(jquery_center_name_selector).first().text().toLowerCase(),
-                        'slots': parse_slots($(element).find(jquery_slot_selector)),
+                        'center_name': center_name,
+                        'slots': parse_slots($(element).find(jquery_slot_selector), center_name),
                     };
                 })
                 .filter((element) => { return element['slots'].length > 0 })
         }
-        function filter_by_name(center_info, center_names) {
-            if (center_names.length == 0) return true;
-            let { center_name } = center_info
-            return center_names.some((name) => { return center_name.search(name) != -1; })
+        function filter_by_name(center_name, center_names) {
+            return center_names.length == 0
+                || center_names.some((name) => { return center_name.search(name) != -1; })
         }
-        function concat_and_sort_slots(accumulator, element) {
+        function concat_slots(accumulator, element) {
             return accumulator.concat(element['slots'])
-                .sort((a, b) => { a['availability'] - b['availability'] })
-                .sort((a, b) => a['date'] - b['date'])
         }
         function get_slot_with_max_avail(accumulator, element) {
             if (element['availability'] > accumulator['availability']) return element
@@ -168,10 +167,17 @@ let slot_timing = 1;
                 $(security_code_textbox_selector).first().focus()
             }, slot_select_timeout);
         }
+        function sort_slots(a, b) {
+            let comp = a['availability'] - b['availability']
+            if (comp == 0)
+                return a['date'] - b['date'];
+            else
+                return comp;
+        }
         let clicked_filters_indexes = get_clicked_filters()
         let start_date_parsed = parse_date(slot_start_date)
         let end_date_parsed = parse_date(slot_end_date)
-        let center_names_parsed = CENTERS_NAMES.map((name) => { return name.toLowerCase() })
+        let center_names_parsed = CENTERS_NAMES.map((name) => { return name.trim().toLowerCase() })
 
         intervalVal = setInterval(() => {
             try {
@@ -181,13 +187,21 @@ let slot_timing = 1;
                 let filters = $(jquery_filters_selector).toArray()
                 clicked_filters_indexes.forEach(element => filters[element].click());
                 setTimeout(() => {
+
                     let result = get_centers()
-                        .filter((center_info) => { return filter_by_name(center_info, center_names_parsed) })
-                        .reduce(concat_and_sort_slots, [])
+                        .filter((center_info) => { return filter_by_name(center_info['center_name'], center_names_parsed) })
+                        .reduce(concat_slots, [])
+                        .filter((slot) => { return check_date_limits(slot, start_date_parsed, end_date_parsed) })
+                        .sort(sort_slots)
+                        .map((slot) => {
+                            console.log(slot);
+                            return slot;
+                        })
                         .reduce(get_slot_with_max_avail, { 'availability': 0 });
+
                     if (result['availability'] > 0) {
-                        result['HTMLElement'].click();
-                        playAudio(successAudio, success_audio_playback_time);
+                        // result['HTMLElement'].click();
+                        // playAudio(successAudio, success_audio_playback_time);
                         clearInterval(intervalVal);
                         select_slot(select_slot_timing_index);
                     }
