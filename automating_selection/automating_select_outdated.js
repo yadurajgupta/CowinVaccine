@@ -17,8 +17,8 @@ let CENTERS_NAMES = []
 
 // start and end dates for the slots
 // Leave as is if you want to book slot for any day
-let slot_start_date = "DD/MM/YYYY";
-let slot_end_date = "DD/MM/YYYY";
+let slot_start_date = "DD/MM/YYYY"
+let slot_end_date = "DD/MM/YYYY"
 
 // slot_timinng can be set to (1,2,3,4)
 // 1 = 09:00AM - 11:00AM
@@ -34,35 +34,35 @@ let slot_timing = 1;
 
     if (![1, 2, 3, 4].includes(slot_timing)) {
         console.error(`Something wrong with slot_timing ${slot_timing}\nHas to be one of (1, 2, 3, 4)`)
-        return;
+        return
     }
 
     if (isNaN(minimum_available_slots)) {
         console.error("Something wrong with minimum_available_slots ${minimum_available_slots}\nHas to be a integer")
-        return;
+        return
     }
     if (document.location.href != SCRIPT_URL) {
-        console.error(`Not at the right page\nGet to ${SCRIPT_URL}`);
-        return;
+        console.error(`Not at the right page\nGet to ${SCRIPT_URL}`)
+        return
     }
     minimum_available_slots = parseInt(minimum_available_slots)
 
-    let intervalVal = null;
-    let script = document.createElement("script");
+    let intervalVal = null
+    let script = document.createElement("script")
     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
-    document.getElementsByTagName("head")[0].appendChild(script);
-    let initial_jquery_load_timeout = 100;
-    let script_search_repeat_time = 1000;
-    let error_audio_playback_time = 10000;
-    let success_audio_playback_time = 10000;
-    let search_button_timeout = 300;
-    let slot_select_timeout = 300;
-    let select_slot_timing_index = slot_timing - 1;
+    document.getElementsByTagName("head")[0].appendChild(script)
+    let initial_jquery_load_timeout = 100
+    let script_search_repeat_time = 1000
+    let error_audio_playback_time = 10000
+    let success_audio_playback_time = 10000
+    let search_button_timeout = 300
+    let slot_select_timeout = 300
+    let select_slot_timing_index = slot_timing - 1
     setTimeout(() => {
         // Audio by Eric Matyas
         // www.soundimage.org
-        let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3");
-        let errorAudio = new Audio("https://soundimage.org/wp-content/uploads/2020/01/UI_Quirky_42.mp3");
+        let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3")
+        let errorAudio = new Audio("https://soundimage.org/wp-content/uploads/2020/01/UI_Quirky_42.mp3")
         //URL on which script is meant to work on
 
 
@@ -77,26 +77,26 @@ let slot_timing = 1;
         let slot_time_button_selector = "ion-button"
         let security_code_textbox_selector = "input[type=text]"
         function parse_date(date_string) {
-            if (date_string == "DD/MM/YYYY") return null;
+            if (date_string == "DD/MM/YYYY") return null
             let parsed = date_string.split("/").map((value) => { return parseInt(value) })
             if (parsed.length != 3 || parsed.some(isNaN)) {
                 console.error(`Something wrong with date ${date_string}\nIt will not be used`)
-                return null;
+                return null
             }
             return new Date(parsed[2], parsed[1] - 1, parsed[0])
         }
         function playAudio(audio, milis) {
-            audio.loop = true;
-            audio.play();
+            audio.loop = true
+            audio.play()
             let closure_audio = audio
-            setTimeout(() => { closure_audio.loop = false; }, milis);
+            setTimeout(() => { closure_audio.loop = false }, milis)
         }
         function get_months() {
             let months = {}
-            for (let index = 0; index < 12; index++) {
+            for (let index = 0 index < 12 index++) {
                 months[new Date(0, index).toLocaleString('en-US', { month: 'long' })] = index
             }
-            return months;
+            return months
         }
         function get_dates() {
             let months = get_months()
@@ -104,13 +104,13 @@ let slot_timing = 1;
                 .filter((element) => { return $(element).is(":visible") })
                 .map((element) => {
                     let arr = $(element).text().split(" ")
-                    return new Date(arr[2], months[arr[1]], arr[0]);
+                    return new Date(arr[2], months[arr[1]], arr[0])
                 })
         }
         function check_date_limits(slot_date, start_date, end_date) {
-            if (start_date && start_date > slot_date) return false;
-            if (end_date && end_date < slot_date) return false;
-            return true;
+            if (start_date && start_date > slot_date) return false
+            if (end_date && end_date < slot_date) return false
+            return true
         }
         function parse_slots(slots, center_name) {
             let dates = get_dates()
@@ -140,33 +140,41 @@ let slot_timing = 1;
                     return {
                         'center_name': center_name,
                         'slots': parse_slots($(element).find(jquery_slot_selector), center_name),
-                    };
+                    }
                 })
                 .filter((element) => { return element['slots'].length > 0 })
         }
         function filter_by_name(center_name, center_names) {
             return center_names.length == 0
-                || center_names.some((name) => { return center_name.search(name) != -1; })
+                || center_names.some((name) => { return center_name.search(name) != -1 })
         }
         function concat_slots(accumulator, element) {
             return accumulator.concat(element['slots'])
         }
         function get_slot_closest(accumulator, element) {
             if (accumulator['date'] == null || element['date'] < accumulator['date']) return element
-            return accumulator;
+            return accumulator
         }
         function select_slot(timing) {
             setTimeout(() => {
                 $(slot_time_button_selector).eq(timing).click()
                 $(security_code_textbox_selector).first().focus()
-            }, slot_select_timeout);
+            }, slot_select_timeout)
         }
         function sort_slots(a, b) {
             let comp = a['availability'] - b['availability']
             if (comp == 0)
-                return a['date'] - b['date'];
+                return a['date'] - b['date']
             else
-                return comp;
+                return comp
+        }
+        function print_slot(slot) {
+            console.log(JSON.stringify({
+                'availability': slot['availability'],
+                'center_name': slot['center_name'],
+                'date': slot['date'],
+            }, 2))
+            return slot
         }
         let start_date_parsed = parse_date(slot_start_date)
         let end_date_parsed = parse_date(slot_end_date)
@@ -174,18 +182,18 @@ let slot_timing = 1;
 
         intervalVal = setInterval(() => {
             try {
-                if ($(success_appointment_header_selector).length > 0) return "DONE";
-                if (document.location.href != SCRIPT_URL) throw ["Not at the right page", `Get to ${SCRIPT_URL}`].join("\n");
-                $(search_button_selector).first().click();
+                if ($(success_appointment_header_selector).length > 0) return "DONE"
+                if (document.location.href != SCRIPT_URL) throw ["Not at the right page", `Get to ${SCRIPT_URL}`].join("\n")
+                $(search_button_selector).first().click()
                 let filters = $(jquery_filters_selector).toArray()
 
-                filters[0].click();   //18+
-                // filters[1].click();   //45+
-                // filters[2].click();   //Covishield
-                filters[3].click();   //Covaxin
-                // filters[4].click();   //Sputnik V
-                // filters[5].click();   //Paid
-                // filters[6].click();   //Free
+                // filters[0].click()   //18+
+                // filters[1].click()   //45+
+                // filters[2].click()   //Covishield
+                // filters[3].click()   //Covaxin
+                // filters[4].click()   //Sputnik V
+                // filters[5].click()   //Paid
+                // filters[6].click()   //Free
 
                 setTimeout(() => {
 
@@ -194,25 +202,26 @@ let slot_timing = 1;
                         .reduce(concat_slots, [])
                         .filter((slot) => { return check_date_limits(slot['date'], start_date_parsed, end_date_parsed) })
                         .sort(sort_slots)
-                        // .map((slot) => {
-                        //     console.log(slot);
-                        //     return slot;
-                        // })
-                        .reduce(get_slot_closest, { 'availability': 0, 'date': null });
+                        .map((slot) => {
+                            print_slot(slot)
+                            return slot
+                        })
+                        .reduce(get_slot_closest, { 'availability': 0, 'date': null })
 
                     if (result['availability'] > 0) {
-                        // console.log("Result", result);
-                        result['HTMLElement'].click();
-                        playAudio(successAudio, success_audio_playback_time);
-                        clearInterval(intervalVal);
-                        select_slot(select_slot_timing_index);
+                        console.log("Result")
+                        print_slot(result)
+                        result['HTMLElement'].click()
+                        playAudio(successAudio, success_audio_playback_time)
+                        clearInterval(intervalVal)
+                        select_slot(select_slot_timing_index)
                     }
-                }, search_button_timeout);
+                }, search_button_timeout)
             } catch (error) {
-                console.error(error);
-                playAudio(errorAudio, error_audio_playback_time);
-                clearInterval(intervalVal);
+                console.error(error)
+                playAudio(errorAudio, error_audio_playback_time)
+                clearInterval(intervalVal)
             }
-        }, script_search_repeat_time);
-    }, initial_jquery_load_timeout);
-})();
+        }, script_search_repeat_time)
+    }, initial_jquery_load_timeout)
+})()
