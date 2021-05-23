@@ -47,7 +47,7 @@ let slot_timing = 1;
     }
     minimum_available_slots = parseInt(minimum_available_slots)
 
-    let intervalVal = null
+    let interval_val = null
     let script = document.createElement("script")
     script.src = "https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"
     document.getElementsByTagName("head")[0].appendChild(script)
@@ -61,8 +61,8 @@ let slot_timing = 1;
     setTimeout(() => {
         // Audio by Eric Matyas
         // www.soundimage.org
-        let successAudio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3")
-        let errorAudio = new Audio("https://soundimage.org/wp-content/uploads/2020/01/UI_Quirky_42.mp3")
+        let success_audio = new Audio("http://soundimage.org/wp-content/uploads/2016/04/UI_Quirky1.mp3")
+        let error_audio = new Audio("https://soundimage.org/wp-content/uploads/2020/01/UI_Quirky_42.mp3")
         //URL on which script is meant to work on
 
 
@@ -85,7 +85,7 @@ let slot_timing = 1;
             }
             return new Date(parsed[2], parsed[1] - 1, parsed[0])
         }
-        function playAudio(audio, milis) {
+        function play_audio(audio, milis) {
             audio.loop = true
             audio.play()
             let closure_audio = audio
@@ -117,7 +117,7 @@ let slot_timing = 1;
             return slots.toArray()
                 .map((element, index) => {
                     return {
-                        'HTMLElement': element,
+                        'html_element': element,
                         'availability': parseInt(element.innerText),
                         'center_name': center_name,
                         'date': dates[index],
@@ -180,7 +180,7 @@ let slot_timing = 1;
         let end_date_parsed = parse_date(slot_end_date)
         let center_names_parsed = CENTERS_NAMES.map((name) => { return name.trim().toLowerCase() })
 
-        intervalVal = setInterval(() => {
+        interval_val = setInterval(() => {
             try {
                 if ($(success_appointment_header_selector).length > 0) return "DONE"
                 if (document.location.href != SCRIPT_URL) throw ["Not at the right page", `Get to ${SCRIPT_URL}`].join("\n")
@@ -211,16 +211,16 @@ let slot_timing = 1;
                     if (result['availability'] > 0) {
                         console.log("Result")
                         print_slot(result)
-                        result['HTMLElement'].click()
-                        playAudio(successAudio, success_audio_playback_time)
-                        clearInterval(intervalVal)
+                        result['html_element'].click()
+                        play_audio(success_audio, success_audio_playback_time)
+                        clearInterval(interval_val)
                         select_slot(select_slot_timing_index)
                     }
                 }, search_button_timeout)
             } catch (error) {
                 console.error(error)
-                playAudio(errorAudio, error_audio_playback_time)
-                clearInterval(intervalVal)
+                play_audio(error_audio, error_audio_playback_time)
+                clearInterval(interval_val)
             }
         }, script_search_repeat_time)
     }, initial_jquery_load_timeout)
