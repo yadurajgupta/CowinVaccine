@@ -162,6 +162,7 @@ let slot_timing = 1;
             return accumulator;
         }
         function select_slot(timing) {
+            if ($(success_appointment_header_selector).length == 0) throw "Select slot called but not on Success page";
             setTimeout(() => {
                 $(slot_time_button_selector).eq(timing).click()
                 $(security_code_textbox_selector).first().focus()
