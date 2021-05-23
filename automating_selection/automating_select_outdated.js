@@ -179,10 +179,10 @@ let slot_timing = 1;
                 $(search_button_selector).first().click();
                 let filters = $(jquery_filters_selector).toArray()
 
-                // filters[0].click();   //18+
+                filters[0].click();   //18+
                 // filters[1].click();   //45+
                 // filters[2].click();   //Covishield
-                // filters[3].click();   //Covaxin
+                filters[3].click();   //Covaxin
                 // filters[4].click();   //Sputnik V
                 // filters[5].click();   //Paid
                 // filters[6].click();   //Free
