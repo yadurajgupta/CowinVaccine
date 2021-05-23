@@ -194,16 +194,16 @@ let slot_timing = 1;
                         .reduce(concat_slots, [])
                         .filter((slot) => { return check_date_limits(slot['date'], start_date_parsed, end_date_parsed) })
                         .sort(sort_slots)
-                        .map((slot) => {
-                            console.log(slot);
-                            return slot;
-                        })
+                        // .map((slot) => {
+                        //     console.log(slot);
+                        //     return slot;
+                        // })
                         .reduce(get_slot_closest, { 'availability': 0, 'date': null });
 
                     if (result['availability'] > 0) {
-                        console.log("Result", result);
-                        // result['HTMLElement'].click();
-                        // playAudio(successAudio, success_audio_playback_time);
+                        // console.log("Result", result);
+                        result['HTMLElement'].click();
+                        playAudio(successAudio, success_audio_playback_time);
                         clearInterval(intervalVal);
                         select_slot(select_slot_timing_index);
                     }
