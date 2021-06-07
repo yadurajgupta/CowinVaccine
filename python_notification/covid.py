@@ -1,19 +1,40 @@
 import json
+import os
 import traceback
 from datetime import datetime, timedelta
+from os import path
 from time import sleep
 
 import pandas as pd
 import requests
 from beepy import beep
 
+base_path = os.sep.join(__file__.split(os.sep)[:-1])  # .join(os.sep)
+
 # API documentation at              https://apisetu.gov.in/public/marketplace/api/cowin
 # GET list of states                https://cdn-api.co-vin.in/api/v2/admin/location/states
 # GET list of districts in state    https://cdn-api.co-vin.in/api/v2/admin/location/districts/state_id
 # Look at the districts.csv and states.csv (generted by get_all_centers.py)
+dose = 2
 districts_names = [
-    "Meerut",
+    # "Meerut",
     "Gurgaon",
+    "Faridabad",
+    "Nuh",
+    "Palwal",
+    "Central Delhi",
+    "East Delhi",
+    "New Delhi",
+    "North Delhi",
+    "North East Delhi",
+    "North West Delhi",
+    "Shahdara",
+    "South Delhi",
+    "South East Delhi",
+    "South West Delhi",
+    "West Delhi",
+    "Ghaziabad",
+    "Gautam Buddha Nagar",
 ]
 
 vaccine = [
@@ -40,7 +61,7 @@ def get_date(extra_ahead=0):
 
 
 def get_district_info(names):
-    districts_df = pd.read_csv("districts.csv")
+    districts_df = pd.read_csv(path.join(base_path, "districts.csv"))
     districts_df["district_name"] = districts_df["district_name"].str.lower()
     curr_districts = []
     for name in names:
@@ -69,8 +90,9 @@ def get_district_info(names):
 def parse_sessions(session_infos):
     available = []
     for session in session_infos:
+        print(json.dumps(session, indent=2))
         if (
-            (int(session["available_capacity"]) > min_available_seats or debug)
+            (int(session["available_capacity_dose{dose}"]) > min_available_seats or debug)
             and (int(session["min_age_limit"]) in min_age_limit)
             and (session["vaccine"] in vaccine)
         ):
@@ -106,25 +128,30 @@ def get_centers(districts_info):
     centers = []
     for district in districts_info:
         try:
+            headers = {
+                "authority": "cdn-api.co-vin.in",
+                "sec-ch-ua": "^\\^",
+                "accept": "application/json, text/plain, */*",
+                "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiIxMTQwYTg1Yi1jZmY3LTRmODMtOGY4Yy05NGZmNmMyYTAyMzgiLCJ1c2VyX2lkIjoiMTE0MGE4NWItY2ZmNy00ZjgzLThmOGMtOTRmZjZjMmEwMjM4IiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo5ODcxMDA5NDcyLCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjg1NjM2MjE1NTQ4ODIsInNlY3JldF9rZXkiOiJiNWNhYjE2Ny03OTc3LTRkZjEtODAyNy1hNjNhYTE0NGYwNGUiLCJzb3VyY2UiOiJjb3dpbiIsInVhIjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzkxLjAuNDQ3Mi43NyBTYWZhcmkvNTM3LjM2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDYtMDdUMTI6MzE6NTIuNzk4WiIsImlhdCI6MTYyMzA2OTExMiwiZXhwIjoxNjIzMDcwMDEyfQ.Y1o4l8iXuONWqpOqXPRJjyBKcWd8qTXdkMZTEc2Uy_w",
+                "sec-ch-ua-mobile": "?0",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
+                "origin": "https://selfregistration.cowin.gov.in",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://selfregistration.cowin.gov.in/",
+                "accept-language": "en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
+            }
+
+            params = (
+                ("district_id", district["district_id"]),
+                ("date", get_date(date_to_look_from)),
+            )
+
             response = requests.get(
                 "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict",
-                headers={
-                    "authority": "cdn-api.co-vin.in",
-                    "accept": "*/*",
-                    "access-control-request-method": "GET",
-                    "access-control-request-headers": "authorization",
-                    "origin": "https://selfregistration.cowin.gov.in",
-                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
-                    "sec-fetch-mode": "cors",
-                    "sec-fetch-site": "cross-site",
-                    "sec-fetch-dest": "empty",
-                    "referer": "https://selfregistration.cowin.gov.in/",
-                    "accept-language": "en-US,en;q=0.9",
-                },
-                params=(
-                    ("district_id", district["district_id"]),
-                    ("date", get_date(date_to_look_from)),
-                ),
+                headers=headers,
+                params=params,
             )
             if response.status_code != 200:
                 raise Exception(
@@ -158,7 +185,7 @@ def get_fresh_response(num=1):
             if center["district_name"] not in available_centers:
                 available_centers[center["district_name"]] = []
             available_centers[center["district_name"]].append(center)
-        with open("result.txt", "w") as file:
+        with open(path.join(base_path, "result.txt"), "w") as file:
             file.writelines([f"Found {len(lst)} ON {get_date()} AT {get_time()}\n"])
             for district in available_centers:
                 file.writelines([district, "\n"])
@@ -181,5 +208,5 @@ while True:
         traceback.print_exc()
         beep(2)
     finally:
-        sleep(3)
+        sleep(5)
         num += 1

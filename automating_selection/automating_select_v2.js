@@ -27,6 +27,32 @@ let slot_end_date = "DD/MM/YYYY"
 // 4 = 03:00PM - 05:00PM
 let slot_timing = 1;
 
+
+let state_list = {
+    'uttar pradesh': [
+        "Ghaziabad",
+        "Gautam Buddha Nagar",],
+    'haryana': [
+        "Gurgaon",
+        "Faridabad",
+        "Nuh",
+        "Palwal"
+    ],
+    'delhi': [
+        "Central Delhi",
+        "East Delhi",
+        "New Delhi",
+        "North Delhi",
+        "North East Delhi",
+        "North West Delhi",
+        "Shahdara",
+        "South Delhi",
+        "South East Delhi",
+        "South West Delhi",
+        "West Delhi",
+    ]
+};
+
 //END OF USER ARGUMENTS PART
 
 (() => {
@@ -178,12 +204,39 @@ let slot_timing = 1;
         let start_date_parsed = parse_date(slot_start_date)
         let end_date_parsed = parse_date(slot_end_date)
         let center_names_parsed = CENTERS_NAMES.map((name) => { return name.trim().toLowerCase() })
+        async function wait_for_x_mils(x) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve('resolved');
+                }, x);
+            });
+        }
+        async function select_from_drop_down(drop_down, to_select) {
+            $(drop_down).click();
+            let found = false;
+            $("span.mat-option-text").toArray().forEach((ele) => {
+                if ($(ele).text().trim().toLowerCase() == to_select.trim().toLowerCase()) {
+                    $(ele).click();
+                    found = true;
+                }
+            })
+            return found;
+        }
+        async function select_state_and_district(state, district) {
+            let drop_downs = $("div.mat-select-arrow").toArray()
+            let state_drop_down = drop_downs[0];
+            let district_drop_down = drop_downs[1];
+            let ret_val = await select_from_drop_down(state_drop_down, state);
+            await wait_for_x_mils(100);
+            let ret_val2 = await select_from_drop_down(district_drop_down, district);
 
-        interval_val = setInterval(() => {
+        }
+        async function do_search() {
             try {
                 if ($(success_appointment_header_selector).length > 0) return "DONE"
                 if (document.location.href != SCRIPT_URL) throw ["Not at the right page", `Get to ${SCRIPT_URL}`].join("\n")
                 $(search_button_selector).first().click()
+                await wait_for_x_mils(100);
                 let filters = $(jquery_filters_selector).toArray()
                 clicked_filters_indexes.forEach(element => filters[element].click())
                 setTimeout(() => {
@@ -202,15 +255,28 @@ let slot_timing = 1;
                     if (result['availability'] > 0) {
                         result['HTMLElement'].click()
                         playAudio(success_audio, success_audio_playback_time)
-                        clearInterval(interval_val)
                         select_slot(select_slot_timing_index)
+                        return true;
                     }
+                    return undefined;
                 }, search_button_timeout)
             } catch (error) {
                 console.error(error)
                 playAudio(error_audio, error_audio_playback_time)
                 clearInterval(interval_val)
+                return false;
             }
-        }, script_search_repeat_time)
+        }
+        function select_state_and_district_and_search() {
+            for (let [state, districts] of Object.entries(state_list)) {
+                for (let district of districts) {
+                    select_state_and_district(state, district);
+                    if ([true, false].includes(do_search())) {
+                        clearInterval(interval_val)
+                    }
+                }
+            }
+        }
+        interval_val = setInterval(() => select_state_and_district_and_search(), script_search_repeat_time)
     }, initial_jquery_load_timeout)
 })()
