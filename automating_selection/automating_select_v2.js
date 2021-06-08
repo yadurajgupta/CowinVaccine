@@ -82,6 +82,8 @@ let stop = false;
     let success_audio_playback_time = 10000
     let search_button_timeout = 300
     let slot_select_timeout = 300
+    let wait_between_searches = 3000;
+    let wait_after_searches = 3000;
     let select_slot_timing_index = slot_timing - 1
     // Audio by Eric Matyas
     // www.soundimage.org
@@ -100,8 +102,6 @@ let stop = false;
     let confirm_button_selector = "ion-button.register-btn"
     let drop_down_options_selector = "span.mat-option-text"
     let security_code_textbox_selector = "input[type=text]"
-    let wait_between_searches = 2000;
-    let wait_after_searches = 2000;
     async function wait_for_x_mils(x) {
         return new Promise(resolve => {
             setTimeout(() => {
