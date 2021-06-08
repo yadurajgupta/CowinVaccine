@@ -1,7 +1,7 @@
 //START OF USER ARGUMENTS PART
 
 // minimum number of slots available
-let minimum_available_slots = 3
+let minimum_available_slots = 1
 
 // Fill in center names as an array (Lower/Upper Case does not matter)
 // Example
@@ -96,8 +96,11 @@ let stop = false;
     let center_row_selector = "ion-row"
     let slot_date_selector = "li.availability-date"
     let slot_time_button_selector = "ion-button"
+    let drop_down_selectors = "div.mat-select-arrow"
+    let confirm_button_selector = "ion-button.register-btn"
+    let drop_down_options_selector = "span.mat-option-text"
     let security_code_textbox_selector = "input[type=text]"
-    let wait_between_searches = 5000;
+    let wait_between_searches = 1000;
     let wait_after_searches = 5000;
     async function wait_for_x_mils(x) {
         return new Promise(resolve => {
@@ -120,7 +123,7 @@ let stop = false;
         audio.loop = true
         audio.play()
         await wait_for_x_mils(milis);
-        closure_audio.loop = false;
+        audio.loop = false;
     }
     function get_months() {
         let months = {}
@@ -135,13 +138,22 @@ let stop = false;
             .filter((element) => { return element['html_element'].checked })
             .map((element) => { return element['index'] })
     }
+    function match_month(month) {
+        month = month.toLowerCase().trim();
+        let months = get_months();
+        for (let [key, index] of Object.entries(months)) {
+            let month_in_dict = key.toLowerCase().substr(0, month.length);
+            if (month_in_dict == month)
+                return index;
+        }
+        return undefined;
+    }
     function get_dates() {
-        let months = get_months()
         return $(slot_date_selector).toArray()
             .filter((element) => { return $(element).is(":visible") })
             .map((element) => {
                 let arr = $(element).text().split(" ")
-                return new Date(arr[2], months[arr[1]], arr[0])
+                return new Date(arr[2], match_month(arr[1]), arr[0])
             })
     }
     function check_date_limits(slot_date, start_date, end_date) {
@@ -192,10 +204,15 @@ let stop = false;
         if (element['availability'] > accumulator['availability']) return element
         return accumulator
     }
+    function get_slot_closest(accumulator, element) {
+        if (accumulator['date'] == null || element['date'] < accumulator['date'] || (element['date'] == accumulator['date'] && element['availability'] > accumulator['availability'])) return element
+        return accumulator
+    }
     async function select_slot(timing) {
         await wait_for_x_mils(slot_select_timeout);
         $(slot_time_button_selector).eq(timing).click();
-        $(security_code_textbox_selector).first().focus();
+        // $(security_code_textbox_selector).first().focus();
+        $(confirm_button_selector).first().click();
     }
     function sort_slots(a, b) {
         let comp = a['availability'] - b['availability']
@@ -212,7 +229,7 @@ let stop = false;
     async function select_from_drop_down(drop_down, to_select) {
         $(drop_down).click();
         let found = false;
-        $("span.mat-option-text").toArray().forEach((ele) => {
+        $(drop_down_options_selector).toArray().forEach((ele) => {
             if ($(ele).text().trim().toLowerCase() == to_select.trim().toLowerCase()) {
                 $(ele).click();
                 found = true;
@@ -221,7 +238,7 @@ let stop = false;
         return found;
     }
     async function select_state_and_district(state, district) {
-        let drop_downs = $("div.mat-select-arrow").toArray()
+        let drop_downs = $(drop_down_selectors).toArray()
         let state_drop_down = drop_downs[0];
         let district_drop_down = drop_downs[1];
         let val1 = await select_from_drop_down(state_drop_down, state);
@@ -231,8 +248,8 @@ let stop = false;
     }
     async function do_search(state, district) {
         try {
-            if ($(success_appointment_header_selector).length > 0) return true
-            if (document.location.href != SCRIPT_URL) return true
+            if ($(success_appointment_header_selector).length > 0) throw true
+            if (document.location.href != SCRIPT_URL) throw true
             $(search_button_selector).first().click()
             await wait_for_x_mils(search_button_timeout)
             let filters = $(jquery_filters_selector).toArray()
@@ -243,11 +260,11 @@ let stop = false;
                 .reduce(concat_slots, [])
                 .filter((slot) => { return check_date_limits(slot['date'], start_date_parsed, end_date_parsed) })
                 .sort(sort_slots)
-                // .map((slot) => {
-                //     console.log(slot)
-                //     return slot
-                // })
-                .reduce(get_slot_with_max_avail, { 'availability': 0 })
+                .map((slot) => {
+                    console.log(slot)
+                    return slot
+                })
+                .reduce(get_slot_closest, { 'availability': 0 })
 
             if (result['availability'] > 0) {
                 result['HTMLElement'].click()
@@ -267,10 +284,10 @@ let stop = false;
     async function select_state_and_district_and_search() {
         for (let [state, districts] of Object.entries(state_list)) {
             for (let district of districts) {
-                if (stop ||
-                    ($(success_appointment_header_selector).length > 0) ||
-                    document.location.href != SCRIPT_URL
-                ) return;
+                if (stop || $(success_appointment_header_selector).length > 0 || document.location.href != SCRIPT_URL) {
+                    playAudio(error_audio, error_audio_playback_time)
+                    return;
+                }
                 let found = await select_state_and_district(state, district);
                 if (found) {
                     await wait_for_x_mils(100);
