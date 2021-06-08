@@ -205,7 +205,11 @@ let stop = false;
         return accumulator
     }
     function get_slot_closest(accumulator, element) {
-        if (accumulator['date'] == null || element['date'] < accumulator['date'] || (element['date'] == accumulator['date'] && element['availability'] > accumulator['availability'])) return element
+        if (accumulator['date'] == null ||
+            element['date'] < accumulator['date'] ||
+            (element['date'] == accumulator['date'] && element['availability'] > accumulator['availability'])
+        )
+            return element
         return accumulator
     }
     async function select_slot(timing) {
